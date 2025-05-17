@@ -1,19 +1,25 @@
 import org.junit.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import se.ifmo.searching.SearchOption;
+import se.ifmo.searching.SearchPage;
+import se.ifmo.searching.vacancy.VacancyPage;
 
 import java.time.Duration;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 public class SuperJobSearchTest {
-    private WebDriver driver;
     private final String baseUrl = "https://spb.superjob.ru/";
+    private WebDriver driver;
+
+    private SearchPage sp;
+    private VacancyPage vp;
 
     @Before
     public void setUp() {
         driver = new FirefoxDriver();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        sp = new SearchPage(driver, baseUrl);
+        vp = new VacancyPage(driver, baseUrl);
     }
 
     @After
@@ -21,76 +27,24 @@ public class SuperJobSearchTest {
         driver.quit();
     }
 
-    private void performSearch(String searchType, String keyword, String location) {
-        driver.get(baseUrl);
-
-        selectSearchType(searchType);
-
-        WebElement searchInput = driver.findElement(By.xpath("//input[contains(@class, 'f-test-input-keywords')]"));
-        searchInput.clear();
-        searchInput.sendKeys(keyword);
-
-
-
-        // Выбор местоположения
-        if (location != null && !location.isEmpty()) {
-            selectLocation(location);
-        }
-
-        // Нажатие кнопки поиска
-        WebElement searchButton = driver.findElement(By.xpath("//*[contains(@class,'f-test-button-Najti')]"));
-        searchButton.click();
-    }
-
-    private void selectSearchType(String searchType) {
-        WebElement dropdown = driver.findElement(By.xpath("//*[contains(@class,'f-test-select-selected')]"));
-        dropdown.click();
-
-        List<WebElement> options = driver.findElements(By.xpath("//div[contains(@class,'f-test-select-option')]"));
-        for (WebElement option : options) {
-            if (option.getText().equalsIgnoreCase(searchType)) {
-                option.click();
-                break;
-            }
-        }
-    }
-
-    private void selectLocation(String location) {
-        WebElement locationButton = driver.findElement(By.xpath("//*[contains(@class,'f-test-clickable-')]"));
-        locationButton.click();
-
-        WebElement clearButton = driver.findElement(By.xpath("//*[contains(@class,'f-test-button-Ochistit')]"));
-        clearButton.click();
-
-        List<WebElement> locations = driver.findElements(By.xpath("//div[contains(@class,'f-test-checkable-geo')]"));
-        for (WebElement loc : locations) {
-            if (loc.getText().equalsIgnoreCase(location)) {
-                loc.click();
-                break;
-            }
-        }
-
-        WebElement applyButton = driver.findElement(By.xpath("//*[contains(@class,'f-test-button-Primenit')]"));
-        applyButton.click();
-    }
-
     @Test
     public void testVacancySearch() {
-        performSearch("Вакансии", "Разработчик", "Санкт-Петербург");
+        sp.performSearch(SearchOption.VACANCY, "Разработчик", "Санкт-Петербург");
+        vp.filterBySalary();
     }
 
     @Test
     public void testCompanySearch() {
-        performSearch("Компании", "Яндекс", "Москва");
+        sp.performSearch(SearchOption.COMPANY, "Яндекс", "Москва");
     }
 
     @Test
     public void testResumeSearch() {
-        performSearch("Резюме", "Тестировщик", "Новосибирск");
+        sp.performSearch(SearchOption.CV, "Тестировщик", "Новосибирск");
     }
 
     @Test
     public void testCourseSearch() {
-        performSearch("Курсы", "Java", "Екатеринбург");
+        sp.performSearch(SearchOption.COURSE, "Java", "Екатеринбург");
     }
 }
