@@ -1,10 +1,10 @@
-package se.ifmo;
+package se.ifmo.util;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import se.ifmo.ConfProperties;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 public class Util {
 

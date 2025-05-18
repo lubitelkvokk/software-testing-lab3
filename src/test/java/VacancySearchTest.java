@@ -36,22 +36,21 @@ public class VacancySearchTest {
     @Test
     public void testVacancy() {
         sp.performSearch(SearchOption.VACANCY, "Разработчик", "Санкт-Петербург");
+        Assertions.assertTrue(vp.vacancyIsDisplayed());
     }
 
     @Test
     public void testVacancyWithSalaryFilter() {
-        sp.performSearch(SearchOption.VACANCY, "Разработчик", "Санкт-Петербург");
+        sp.performSearch(SearchOption.VACANCY, "Разработчик", null);
         vp.filterBySalary();
+        Assertions.assertTrue(vp.vacancyIsDisplayed());
     }
 
     @Test
     public void testVacancyWithWorkingRateFilter() {
         sp.performSearch(SearchOption.VACANCY, "Разработчик", null);
         vp.filterByWorkingRate(WorkingRate.MONTH);
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException e) {
-        }
+        Assertions.assertTrue(vp.vacancyIsDisplayed());
     }
 
     @Test
@@ -68,29 +67,20 @@ public class VacancySearchTest {
     public void testVacancyWithEmploymentTypeFilter() {
         sp.performSearch(SearchOption.VACANCY, "Разработчик", null);
         vp.filterByEmploymentType(EmploymentType.WATCH);
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException e) {
-        }
+        Assertions.assertTrue(vp.vacancyIsDisplayed());
     }
 
     @Test
     public void testVacancyWithVacancyTypeFilter() {
         sp.performSearch(SearchOption.VACANCY, "Разработчик", null);
         vp.filterByVacancyType(VacancyType.NO_EXPERIENCE_REQUIRED);
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException e) {
-        }
+        Assertions.assertTrue(vp.vacancyIsDisplayed());
     }
 
     @Test
     public void testVacancyWithAdditionalParamsFilter() {
         sp.performSearch(SearchOption.VACANCY, "Разработчик", null);
         vp.filterByAdditionalParams(AdditionalParams.AVAILABLE_FOR_STUDENTS);
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException e) {
-        }
+        Assertions.assertTrue(vp.vacancyIsDisplayed());
     }
 }

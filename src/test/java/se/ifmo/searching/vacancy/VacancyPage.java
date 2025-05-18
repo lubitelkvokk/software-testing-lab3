@@ -14,11 +14,9 @@ public class VacancyPage {
     private WebDriver driver;
     private WebDriverWait wait;
     private JavascriptExecutor js;
-    private final String baseUrl;
 
     public VacancyPage(WebDriver driver, String baseUrl) {
         this.driver = driver;
-        this.baseUrl = baseUrl;
 
         js = (JavascriptExecutor) driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(15));
@@ -62,16 +60,26 @@ public class VacancyPage {
         clickButton(By.xpath("//*[contains(@class, '" + additionalParams.toString() + "')]"));
     }
 
-    public String firstVacancyTime() {
+    public WebElement getFirstJob() {
         return wait.until(
                 ExpectedConditions.visibilityOfElementLocated(
                         By.xpath("//*[contains(@class, 'f-test-vacancy-item-')]"))
-        ).findElement(
+        );
+    }
+
+    public String firstVacancyTime() {
+        return getFirstJob().findElement(
                 By.xpath("./div/div/div/div/div/div/span")).getText();
     }
 
     public boolean vacancyIsDisplayed() {
         return isDisplayed(By.xpath("//*[contains(@class, 'f-test-vacancy-item-')]"));
+    }
+
+    public void goToFirstJobLink() {
+        getFirstJob().findElement(By.xpath(".//*[contains(@class, 'f-test-link-')]")).click();
+        Object[] windowHandles=driver.getWindowHandles().toArray();
+        driver.switchTo().window((String) windowHandles[1]);
     }
 
 }

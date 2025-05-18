@@ -1,59 +1,82 @@
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import se.ifmo.ConfProperties;
-import se.ifmo.Util;
 import se.ifmo.pages.LoginPage;
 import se.ifmo.pages.MainPage;
+import se.ifmo.util.CookiesHelper;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+import java.io.FileNotFoundException;
+import java.time.Duration;
+import java.util.Set;
+
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthTest {
-    private LoginPage loginPage;
-    private MainPage mainPage;
-    private WebDriver driver;
+
+    private static final String baseUrl = "https://spb.superjob.ru/";
+    private static LoginPage loginPage;
+    private static MainPage mainPage;
+    private static WebDriver driver;
+    private static JavascriptExecutor js;
 
     @BeforeAll
-    public void setUpBeforeClass() {
-        driver = Util.setUpDriver();
-        loginPage = new LoginPage(driver);
+    public static void setUpAll() {
+        driver = new FirefoxDriver();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        js = (JavascriptExecutor) driver;
+        driver.manage().window().maximize();
+
+        try {
+            CookiesHelper.clearCookiesFile();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Cookie could not be deleted", e);
+        }
+        loginPage = new LoginPage(driver, baseUrl);
         mainPage = new MainPage(driver);
     }
 
-
-    private void loginOnce(String login, String password) {
-        if (!loginPage.checkLoginBtn()){
-            loginPage.clickLoginBtn();
-            loginPage.inputLogin(login);
-            loginPage.inputPasswd(password);
-            Assertions.assertTrue(mainPage.isLoggedIn(), "Логин не удался");
-        }
+    @BeforeEach
+    public void setUp() {
+        driver.manage().deleteAllCookies();
+        driver.get(baseUrl);
+        CookiesHelper.loadCookies(driver);
     }
 
-    @Test
-    public void loginTest() {
-        loginOnce(ConfProperties.getProperty("login"), ConfProperties.getProperty("password"));
-        String username = mainPage.getName();
-        Assertions.assertEquals(ConfProperties.getProperty("username"), username, "Имена пользователей не совпадают");
+    @AfterAll
+    public static void tearDownAll() {
+        driver.quit();
+//        try {
+//            CookiesHelper.clearCookiesFile();
+//        } catch (FileNotFoundException e) {
+//            throw new RuntimeException("Cookies aren't cleaned");
+//        }
     }
 
 
     @Test
+    @Order(1)
     public void incorrectPasswordTest() {
-        loginOnce(ConfProperties.getProperty("login"), ConfProperties.getProperty("incorrect_password"));
+        loginPage.loginOnce(ConfProperties.getProperty("email"), ConfProperties.getProperty("incorrect_password"));
         Assertions.assertTrue(loginPage.isIncorrectPasswd());
     }
 
     @Test
+    @Order(2)
+    public void loginTest() {
+        loginPage.loginOnce(ConfProperties.getProperty("email"), ConfProperties.getProperty("password"));
+        String username = mainPage.getName();
+        Assertions.assertEquals(ConfProperties.getProperty("username"), username, "Имена пользователей не совпадают");
+        CookiesHelper.saveCookies(driver);
+    }
+
+    @Test
+    @Order(3)
     public void logoutTest() {
-        loginOnce(ConfProperties.getProperty("login"), ConfProperties.getProperty("password"));
+        driver.navigate().refresh();
+        mainPage.clickAvatar();
         mainPage.clickLogoutBtn();
         Assertions.assertTrue(loginPage.checkLoginBtn(), "Кнопка входа не отображается после выхода");
     }
 
-    @AfterAll
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
-    }
 }

@@ -4,13 +4,23 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import se.ifmo.util.CookiesHelper;
+
+import java.time.Duration;
 
 public class LoginPage {
-    public WebDriver driver;
+    private WebDriver driver;
+    private WebDriverWait wait;
+    private final String baseUrl = "https://spb.superjob.ru/";
+    private String loginFromUrl;
 
-    public LoginPage(WebDriver driver) {
+
+    public LoginPage(WebDriver driver, String baseUrl) {
+        loginFromUrl = baseUrl;
         PageFactory.initElements(driver, this);
         this.driver = driver;
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     @FindBy(xpath = "//*[contains(@class, 'f-test-input-login')]")
@@ -34,6 +44,7 @@ public class LoginPage {
     }
 
     public void inputLogin(String login) {
+        loginField.clear();
         loginField.sendKeys(login);
         confirmFieldButton.click();
     }
@@ -43,14 +54,32 @@ public class LoginPage {
         confirmFieldButton.click();
     }
 
-    public boolean isIncorrectPasswd(){
-        return incorrectPasswdField.isEnabled();
+    public boolean isIncorrectPasswd() {
+        return wait.until(d -> incorrectPasswdField.isDisplayed());
     }
 
     public void clickLoginBtn() {
         loginBtn.click();
     }
-    public boolean checkLoginBtn(){
+
+    public boolean checkLoginBtn() {
         return loginBtn.isEnabled();
     }
+
+    public void loginOnce(String login, String password) {
+        if (checkLoginBtn()) {
+            clickLoginBtn();
+            inputLogin(login);
+            inputPasswd(password);
+        }
+    }
+
+    public void loginAndSaveCookie(String login, String password) {
+        driver.get(loginFromUrl);
+        loginOnce(login, password);
+        CookiesHelper.saveCookies(driver);
+    }
+
+    // При логине - сохраняем куки в файл (проверка на логин осуществляется по содержимому в файле)
+    // Logout выходит и удаляет содержимое в файле
 }

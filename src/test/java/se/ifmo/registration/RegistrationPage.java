@@ -49,10 +49,10 @@ public class RegistrationPage {
         fillField(By.xpath("//*[contains(@class, 'f-test-input-phone')]"), phoneNumber);
     }
 
-    private void fillWorkExpirience(RegistrationForm.WorkExpirience workExpirience) {
-        if (!workExpirience.isHaveExpirience()) {
-            clickButton(By.xpath("//div[@id='app']/div/div/div/div[4]/div/div/div/div/div/div/div[2]/div/div/div/div[2]/form/div/div[9]/div/label/span/span"));
-        }
+    public void fillWorkExpirience(RegistrationForm.WorkExpirience workExpirience) {
+//        if (!workExpirience.isHaveExpirience()) {
+//            clickButton(By.xpath("//div[@id='app']/div/div/div/div[4]/div/div/div/div/div/div/div[2]/div/div/div/div[2]/form/div/div[9]/div/label/span/span"));
+//        }
         if (workExpirience.getType() != null)
             fillField(By.xpath("//*[contains(@class, 'f-test-input-experience.position')]"), workExpirience.getType());
         if (workExpirience.getCompany() != null)
@@ -108,6 +108,13 @@ public class RegistrationPage {
         saves.get(saves.size() - 1).click();
     }
 
+    public void fillBaseInfo(RegistrationForm rf) {
+        fillField(By.xpath("//*[contains(@class, 'f-test-input-person.firstName')]"), rf.getFirstName());
+        fillField(By.xpath("//*[contains(@class, 'f-test-input-person.lastName')]"), rf.getLastName());
+        fillPhoneNumber(rf.getPhoneNumber());
+        fillBirthDate(rf.getBirthdate());
+    }
+
     public void registerUser(RegistrationForm rf) {
         driver.get("https://spb.superjob.ru/");
         driver.manage().window().maximize();
@@ -115,11 +122,7 @@ public class RegistrationPage {
         fillField(By.xpath("//*[contains(@class, 'f-test-input-login')]"), rf.getEmail());
         clickButton(By.xpath("//*[contains(@class, 'f-test-button-Prodolzhit')]"));
 
-        fillField(By.xpath("//*[contains(@class, 'f-test-input-person.firstName')]"), rf.getFirstName());
-        fillField(By.xpath("//*[contains(@class, 'f-test-input-person.lastName')]"), rf.getLastName());
-        fillPhoneNumber(rf.getPhoneNumber());
-        fillBirthDate(rf.getBirthdate());
-
+        fillBaseInfo(rf);
 
         fillWorkExpirience(rf.getWorkExpirience());
 
