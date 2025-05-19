@@ -1,4 +1,4 @@
-package se.ifmo.searching.vacancy;
+package se.ifmo.pages.searching.vacancy;
 
 public enum EmploymentType {
     FULL("f-test-link-Polnaya"),

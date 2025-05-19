@@ -1,4 +1,4 @@
-package se.ifmo.registration;
+package se.ifmo.pages.registration;
 
 import lombok.Builder;
 import lombok.Data;

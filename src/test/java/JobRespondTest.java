@@ -1,11 +1,10 @@
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import se.ifmo.ConfProperties;
 import se.ifmo.pages.LoginPage;
-import se.ifmo.searching.SearchPage;
-import se.ifmo.searching.respond.RespondPage;
-import se.ifmo.searching.vacancy.VacancyPage;
+import se.ifmo.pages.searching.SearchPage;
+import se.ifmo.pages.searching.respond.RespondPage;
+import se.ifmo.pages.searching.vacancy.VacancyPage;
 import se.ifmo.util.CookiesHelper;
 
 import java.time.Duration;
@@ -54,18 +53,19 @@ public class JobRespondTest {
 
     @Test
     public void respondToVacancyWithoutAccount() {
-        vp.goToFirstJobLink();
+//        vp.goToFirstJobLink();
 
         rp.respondWithoutAccount();
         Assertions.assertTrue(rp.respondIsSent());
     }
 
     @Test
+    // TODO COOKIES NOT WORKING
     public void respondToVacancyWithAccount() {
         CookiesHelper.loadCookies(driver);
         driver.navigate().refresh();
 
-        vp.goToFirstJobLink();
+//        vp.goToFirstJobLink();
 
         rp.respondWithAccount();
         Assertions.assertTrue(rp.respondIsSent());

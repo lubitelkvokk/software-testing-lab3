@@ -1,4 +1,4 @@
-package se.ifmo.registration;
+package se.ifmo.pages.registration;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -47,6 +47,10 @@ public class RegistrationPage {
 
     private void fillPhoneNumber(String phoneNumber) {
         fillField(By.xpath("//*[contains(@class, 'f-test-input-phone')]"), phoneNumber);
+    }
+
+    private void fillEmail(String email) {
+        fillField(By.xpath("//*[contains(@class, 'f-test-input-contacts.email')]"), email);
     }
 
     public void fillWorkExpirience(RegistrationForm.WorkExpirience workExpirience) {
@@ -109,19 +113,22 @@ public class RegistrationPage {
     }
 
     public void fillBaseInfo(RegistrationForm rf) {
-        fillField(By.xpath("//*[contains(@class, 'f-test-input-person.firstName')]"), rf.getFirstName());
-        fillField(By.xpath("//*[contains(@class, 'f-test-input-person.lastName')]"), rf.getLastName());
-        fillPhoneNumber(rf.getPhoneNumber());
-        fillBirthDate(rf.getBirthdate());
+        if (rf.getFirstName() != null)
+            fillField(By.xpath("//*[contains(@class, 'f-test-input-person.firstName')]"), rf.getFirstName());
+        if (rf.getLastName() != null)
+            fillField(By.xpath("//*[contains(@class, 'f-test-input-person.lastName')]"), rf.getLastName());
+        if (rf.getPhoneNumber() != null) fillPhoneNumber(rf.getPhoneNumber());
+        if (rf.getEmail() != null) fillEmail(rf.getEmail());
+        if (rf.getBirthdate() != null) fillBirthDate(rf.getBirthdate());
     }
 
-    public void registerUser(RegistrationForm rf) {
-        driver.get("https://spb.superjob.ru/");
-        driver.manage().window().maximize();
+    public void createAccount(RegistrationForm rf) {
         clickButton(By.xpath("//*[contains(@class, 'f-test-button-Voĭti')]"));
         fillField(By.xpath("//*[contains(@class, 'f-test-input-login')]"), rf.getEmail());
         clickButton(By.xpath("//*[contains(@class, 'f-test-button-Prodolzhit')]"));
+    }
 
+    public void fillRegistrationForm(RegistrationForm rf) {
         fillBaseInfo(rf);
 
         fillWorkExpirience(rf.getWorkExpirience());
@@ -135,4 +142,5 @@ public class RegistrationPage {
 
         finishRegistration();
     }
+
 }

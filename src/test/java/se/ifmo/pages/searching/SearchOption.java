@@ -1,4 +1,4 @@
-package se.ifmo.searching;
+package se.ifmo.pages.searching;
 
 public enum SearchOption {
     VACANCY("searchByHintSelect-item-0"),

@@ -1,4 +1,4 @@
-package se.ifmo.searching.vacancy;
+package se.ifmo.pages.searching.vacancy;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;

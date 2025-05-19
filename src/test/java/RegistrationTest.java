@@ -1,33 +1,33 @@
-import org.junit.Test;
-import org.junit.Before;
-import org.junit.After;
-
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.*;
 import org.openqa.selenium.*;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import se.ifmo.registration.RegistrationError;
-import se.ifmo.registration.RegistrationForm;
-import se.ifmo.registration.RegistrationPage;
+import se.ifmo.pages.MainPage;
+import se.ifmo.pages.registration.RegistrationError;
+import se.ifmo.pages.registration.RegistrationForm;
+import se.ifmo.pages.registration.RegistrationPage;
 
 import java.time.Duration;
 
 public class RegistrationTest {
 
-    private WebDriver driver;
-    private JavascriptExecutor js;
-    private RegistrationForm rf;
-    private RegistrationPage rp;
+    private static WebDriver driver;
+    private static JavascriptExecutor js;
+    private static RegistrationForm rf;
+    private static RegistrationPage rp;
+    private static MainPage mp;
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    public static void setUpBeforeAll() {
         driver = new FirefoxDriver();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         rp = new RegistrationPage(driver);
+        mp = new MainPage(driver);
         js = (JavascriptExecutor) driver;
+        driver.manage().window().maximize();
+    }
 
+    @BeforeEach
+    public void setUp() {
         String email = RegistrationPage.getRandomEmail();
         String phone = RegistrationPage.getRandomNumber();
         String[] skills = new String[]{"Git", "Maven"};
@@ -42,52 +42,75 @@ public class RegistrationTest {
                         .currentlyWork(true).haveExpirience(true).companyDescription("NICHEGO NE DELALI")
                         .build()
         );
+
+        driver.get(MainPage.baseUrl);
     }
 
-    @After
-    public void tearDown() {
+    @AfterEach
+    public void tearDown(){
+        driver.manage().deleteAllCookies();
+    }
+
+    @AfterAll
+    public static void tearDownAfterAll() {
         driver.quit();
     }
 
     @Test
     public void testValidRegistration() {
-        rp.registerUser(rf);
+        rp.createAccount(rf);
+        rp.fillRegistrationForm(rf);
         assert rp.isRegistrationFinished();
     }
 
     @Test
     public void testInvalidPhoneNumber() {
         rf.setPhoneNumber("123");
-        rp.registerUser(rf);
+        rp.createAccount(rf);
+        rp.fillRegistrationForm(rf);
         assert rp.isMessagePresent(String.valueOf(RegistrationError.INVALID_PHONE_NUMBER));
     }
 
     @Test
     public void testPhoneNumberIsEmpty() {
         rf.setPhoneNumber("");
-        rp.registerUser(rf);
+        rp.createAccount(rf);
+        rp.fillRegistrationForm(rf);
         Assertions.assertTrue(rp.isElementDisplayedByClass("f-test-resume_card"));
     }
 
     @Test
     public void testPhoneNumberAsOnlySpecificSymbols() {
         rf.setPhoneNumber("###FFFS!!!!");
-        rp.registerUser(rf);
+        rp.createAccount(rf);
+        rp.fillRegistrationForm(rf);
         Assertions.assertTrue(rp.isElementDisplayedByClass("f-test-resume_card"));
     }
 
     @Test
     public void testIncorrectPhoneNumber() {
         rf.setPhoneNumber("+70001200691");
-        rp.registerUser(rf);
-        assert rp.isMessagePresent(String.valueOf(RegistrationError.INCORRECT_PHONE_NUMBER));
+        rp.createAccount(rf);
+        rp.fillRegistrationForm(rf);
+        Assertions.assertTrue(rp.isMessagePresent(String.valueOf(RegistrationError.INCORRECT_PHONE_NUMBER)));
     }
 
     @Test
     public void testDuplicatePhoneNumber() {
         rf.setPhoneNumber("+79911200691");
-        rp.registerUser(rf);
-        assert rp.isMessagePresent(String.valueOf(RegistrationError.BUSY_PHONE_NUMBER));
+        rp.createAccount(rf);
+        rp.fillRegistrationForm(rf);
+       Assertions.assertTrue(rp.isMessagePresent(String.valueOf(RegistrationError.BUSY_PHONE_NUMBER)));
+    }
+
+    @Test
+    public void testPostResumeWithoutContacts() {
+        driver.get(MainPage.baseUrl);
+        mp.postResume();
+        rf.setPhoneNumber(null);
+        rf.setEmail(null);
+        rp.fillRegistrationForm(rf);
+        Assertions.assertTrue(rp.isMessagePresent(String.valueOf(RegistrationError.EMPTY_PHONE_AND_EMAIL)));
     }
 }
 

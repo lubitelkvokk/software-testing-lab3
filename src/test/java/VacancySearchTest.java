@@ -6,9 +6,9 @@ import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import se.ifmo.searching.SearchOption;
-import se.ifmo.searching.SearchPage;
-import se.ifmo.searching.vacancy.*;
+import se.ifmo.pages.searching.SearchOption;
+import se.ifmo.pages.searching.SearchPage;
+import se.ifmo.pages.searching.vacancy.*;
 
 import java.time.Duration;
 

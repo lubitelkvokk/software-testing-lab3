@@ -1,9 +1,9 @@
 import org.junit.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import se.ifmo.searching.SearchOption;
-import se.ifmo.searching.SearchPage;
-import se.ifmo.searching.vacancy.VacancyPage;
+import se.ifmo.pages.searching.SearchOption;
+import se.ifmo.pages.searching.SearchPage;
+import se.ifmo.pages.searching.vacancy.VacancyPage;
 
 import java.time.Duration;
 
