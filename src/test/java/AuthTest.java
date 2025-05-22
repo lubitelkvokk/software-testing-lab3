@@ -9,7 +9,6 @@ import se.ifmo.util.CookiesHelper;
 
 import java.io.FileNotFoundException;
 import java.time.Duration;
-import java.util.Set;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthTest {

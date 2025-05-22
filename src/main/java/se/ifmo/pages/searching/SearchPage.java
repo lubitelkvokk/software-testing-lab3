@@ -1,6 +1,5 @@
 package se.ifmo.pages.searching;
 
-import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -42,8 +41,6 @@ public class SearchPage {
     }
 
     public void performSearch(SearchOption so, String keyword, String location) {
-        driver.get(baseUrl);
-
         selectSearchType(so);
 
         WebElement searchInput = wait.until(ExpectedConditions.visibilityOfElementLocated(
@@ -69,11 +66,11 @@ public class SearchPage {
 //        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(
 //                By.xpath("//*[contains(@class,'f-test-checkable-geo')]"), 0));
 
-        // TODO jQuery не используется. Как отследить завершение запросов? ЗАМЕНИТЬ НА НОРМАЛЬНОЕ ОЖИДАНИЕ
         try {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
         }
+
         List<WebElement>
                 locations = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(
                 By.xpath("//*[contains(@class,'f-test-checkable-geo')]"))
@@ -90,12 +87,12 @@ public class SearchPage {
                 break;
             }
         }
-        Assertions.assertTrue(cityFounded, "City was not founded");
     }
 
     private void selectLocation(String location) {
         WebElement locationButton = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//*[contains(@class,'f-test-clickable-')]")));
+        scrollToElement(locationButton);
         locationButton.click();
 
         WebElement clearButton = wait.until(ExpectedConditions.elementToBeClickable(

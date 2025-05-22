@@ -1,12 +1,13 @@
 package se.ifmo.pages.searching.cv;
 
+import se.ifmo.pages.searching.vacancy.VacancyType;
+import se.ifmo.pages.searching.vacancy.WorkingRate;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import se.ifmo.pages.searching.vacancy.*;
 
 import java.time.Duration;
 

@@ -1,4 +1,6 @@
-import org.junit.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import se.ifmo.pages.searching.SearchOption;
@@ -8,22 +10,24 @@ import se.ifmo.pages.searching.vacancy.VacancyPage;
 import java.time.Duration;
 
 public class SuperJobSearchTest {
-    private final String baseUrl = "https://spb.superjob.ru/";
-    private WebDriver driver;
+    private static final String baseUrl = "https://spb.superjob.ru/";
+    private static WebDriver driver;
 
-    private SearchPage sp;
-    private VacancyPage vp;
+    private static SearchPage sp;
+    private static VacancyPage vp;
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    public static void setUpBeforeAll() {
         driver = new FirefoxDriver();
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         sp = new SearchPage(driver, baseUrl);
         vp = new VacancyPage(driver, baseUrl);
+
+        driver.get(baseUrl);
     }
 
-    @After
-    public void tearDown() {
+    @AfterAll
+    public static void tearDownAfterAll() {
         driver.quit();
     }
 

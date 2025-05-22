@@ -59,7 +59,7 @@ public class CVSearchTest {
     }
 
     @Test
-    public void testCVWithEmploymentType() {
+    public void testCVWithEducationType() {
         cvPage.filterByEducationType(EducationType.INCOMPLETE_HIGHER);
         Assertions.assertTrue(cvPage.CVIsDisplayed());
     }

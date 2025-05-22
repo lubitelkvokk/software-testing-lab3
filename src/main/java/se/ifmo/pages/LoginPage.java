@@ -1,11 +1,11 @@
 package se.ifmo.pages;
 
+import se.ifmo.util.CookiesHelper;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import se.ifmo.util.CookiesHelper;
 
 import java.time.Duration;
 

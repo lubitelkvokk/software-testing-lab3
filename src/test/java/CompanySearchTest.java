@@ -3,10 +3,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import se.ifmo.pages.searching.SearchPage;
 import se.ifmo.pages.searching.company.CompanyPage;
-import se.ifmo.pages.searching.cv.CVPage;
-import se.ifmo.pages.searching.cv.EducationType;
-import se.ifmo.pages.searching.cv.EmploymentType;
-import se.ifmo.pages.searching.cv.SeekerActivity;
 
 import java.time.Duration;
 

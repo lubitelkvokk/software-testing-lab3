@@ -67,7 +67,7 @@ public class RegisterCompanyPage {
     }
 
     public void submitForm() {
-        driver.findElement(By.cssSelector(".\\_9gypz")).click();
+        clickButton(By.xpath("//*[contains(@class, 'f-test-button-Prodolzhit')]"));
     }
 
     public void registerAs(CompanyType ct) {
