@@ -3,6 +3,7 @@ package se.ifmo.pages.searching.respond;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import se.ifmo.ConfProperties;
 import se.ifmo.pages.registration.RegistrationForm;
 import se.ifmo.pages.registration.RegistrationPage;
 
@@ -23,7 +24,7 @@ public class RespondPage {
         rp = new RegistrationPage(driver);
 
         js = (JavascriptExecutor) driver;
-        wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
     }
 
     private void scrollToElement(WebElement element) {
@@ -61,10 +62,7 @@ public class RespondPage {
     }
 
     private void respondToCurrVacancy() {
-        // TODO ПОЧЕМУ-ТО ИМЕННО ЭТОЙ КНОПКЕ ВООБЩЕ ПОБОКУ НА ЛЮБЫЕ ОЖИДАНИЯ
-//        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(@class, 'f-test-vacancy-base-info')]")));
         By locator = By.xpath(".//*[contains(@class, 'f-test-vacancy-response-button')]");
-//        WebElement respondBtn = element.findElement(locator);
         WebElement respondBtn = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
         wait.until(ExpectedConditions.elementToBeClickable(respondBtn)).click();
     }

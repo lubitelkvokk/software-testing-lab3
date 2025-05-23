@@ -23,7 +23,6 @@ public class VacancySearchTest {
     public static void setUpBeforeAll() {
         driver = new FirefoxDriver();
         wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         sp = new SearchPage(driver, baseUrl);
         vp = new VacancyPage(driver, baseUrl);
 

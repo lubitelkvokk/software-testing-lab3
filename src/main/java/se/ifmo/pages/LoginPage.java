@@ -1,10 +1,11 @@
 package se.ifmo.pages;
 
+import org.openqa.selenium.By;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import se.ifmo.ConfProperties;
 import se.ifmo.util.CookiesHelper;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
@@ -18,52 +19,37 @@ public class LoginPage {
 
     public LoginPage(WebDriver driver, String baseUrl) {
         loginFromUrl = baseUrl;
-        PageFactory.initElements(driver, this);
         this.driver = driver;
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
     }
 
-    @FindBy(xpath = "//*[contains(@class, 'f-test-input-login')]")
-    private WebElement loginField;
-
-
-    @FindBy(xpath = "//*[contains(@class, 'f-test-button-Prodolzhit')]")
-    private WebElement confirmFieldButton;
-
-    @FindBy(xpath = "//*[contains(@class, 'f-test-button-Voĭti')]/..")
-    private WebElement loginBtn;
-
-    @FindBy(xpath = "//*[contains(@class, 'f-test-input-password')]")
-    private WebElement passwdField;
-
-    @FindBy(xpath = "//*[contains(@class, 'f-test-info-block-title')]")
-    private WebElement incorrectPasswdField;
-
-    public void clearLogin() {
-        loginField.clear();
+    public void confirmFieldButton() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(@class, 'f-test-button-Prodolzhit')]"))).click();
     }
 
     public void inputLogin(String login) {
+        WebElement loginField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(@class, 'f-test-input-login')]")));
         loginField.clear();
         loginField.sendKeys(login);
-        confirmFieldButton.click();
+        confirmFieldButton();
     }
 
     public void inputPasswd(String passwd) {
-        passwdField.sendKeys(passwd);
-        confirmFieldButton.click();
+        WebElement passwrdField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(@class, 'f-test-input-password')]")));
+        passwrdField.sendKeys(passwd);
+        confirmFieldButton();
     }
 
     public boolean isIncorrectPasswd() {
-        return wait.until(d -> incorrectPasswdField.isDisplayed());
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(@class, 'f-test-info-block-title')]"))).isDisplayed();
     }
 
     public void clickLoginBtn() {
-        loginBtn.click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[contains(@class, 'f-test-button-Voĭti')]/.."))).click();
     }
 
     public boolean checkLoginBtn() {
-        return loginBtn.isEnabled();
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(@class, 'f-test-button-Voĭti')]/.."))).isDisplayed();
     }
 
     public void loginOnce(String login, String password) {

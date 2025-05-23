@@ -1,5 +1,6 @@
 package se.ifmo.pages.searching.cv;
 
+import se.ifmo.ConfProperties;
 import se.ifmo.pages.searching.vacancy.VacancyType;
 import se.ifmo.pages.searching.vacancy.WorkingRate;
 import org.openqa.selenium.By;
@@ -21,7 +22,7 @@ public class CVPage {
         this.driver = driver;
 
         js = (JavascriptExecutor) driver;
-        wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
     }
 
     private void fillField(By locator, String value) {

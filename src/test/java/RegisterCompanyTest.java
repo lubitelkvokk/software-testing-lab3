@@ -19,7 +19,6 @@ public class RegisterCompanyTest {
     @BeforeAll
     public static void setUp() {
         driver = new FirefoxDriver();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         driver.manage().window().maximize();
         registerPage = new RegisterCompanyPage(driver);
     }

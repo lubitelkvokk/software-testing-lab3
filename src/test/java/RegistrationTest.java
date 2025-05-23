@@ -1,12 +1,13 @@
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import se.ifmo.pages.MainPage;
 import se.ifmo.pages.registration.RegistrationError;
 import se.ifmo.pages.registration.RegistrationForm;
 import se.ifmo.pages.registration.RegistrationPage;
-
-import java.time.Duration;
 
 public class RegistrationTest {
 
@@ -15,11 +16,11 @@ public class RegistrationTest {
     private static RegistrationForm rf;
     private static RegistrationPage rp;
     private static MainPage mp;
+    public static String baseUrl = "https://spb.superjob.ru/";
 
     @BeforeAll
     public static void setUpBeforeAll() {
-        driver = new FirefoxDriver();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver = new ChromeDriver();
         rp = new RegistrationPage(driver);
         mp = new MainPage(driver);
         js = (JavascriptExecutor) driver;
@@ -42,12 +43,10 @@ public class RegistrationTest {
                         .currentlyWork(true).haveExpirience(true).companyDescription("NICHEGO NE DELALI")
                         .build()
         );
-
-        driver.get(MainPage.baseUrl);
     }
 
     @AfterEach
-    public void tearDown(){
+    public void tearDown() {
         driver.manage().deleteAllCookies();
     }
 
@@ -56,56 +55,96 @@ public class RegistrationTest {
         driver.quit();
     }
 
-    @Test
-    public void testValidRegistration() {
+    private void initDriver(String browser) {
+        switch (browser.toLowerCase()) {
+            case "chrome":
+
+            case "firefox":
+                driver = new FirefoxDriver();
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported browser: " + browser);
+        }
+        driver.manage().window().maximize();
+        rp = new RegistrationPage();
+        mp = new MainPage(driver);
+        js = (JavascriptExecutor) driver;
+
+        driver.get(baseUrl);
+    }
+
+    @ParameterizedTest(name = "Browser: {0}")
+    @ValueSource(strings = {"chrome", "firefox"})
+    public void testValidRegistration(String browser) {
+        initDriver(browser);
+
+        rf.setPhoneNumber(null);
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
         assert rp.isRegistrationFinished();
     }
 
-    @Test
-    public void testInvalidPhoneNumber() {
+    @ParameterizedTest(name = "Browser: {0}")
+    @ValueSource(strings = {"chrome", "firefox"})
+    public void testInvalidPhoneNumber(String browser) {
+        initDriver(browser);
+
         rf.setPhoneNumber("123");
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
         assert rp.isMessagePresent(String.valueOf(RegistrationError.INVALID_PHONE_NUMBER));
     }
 
-    @Test
-    public void testPhoneNumberIsEmpty() {
+    @ParameterizedTest(name = "Browser: {0}")
+    @ValueSource(strings = {"chrome", "firefox"})
+    public void testPhoneNumberIsEmpty(String browser) {
+        initDriver(browser);
+
         rf.setPhoneNumber("");
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
         Assertions.assertTrue(rp.isElementDisplayedByClass("f-test-resume_card"));
     }
 
-    @Test
-    public void testPhoneNumberAsOnlySpecificSymbols() {
+
+    @ParameterizedTest(name = "Browser: {0}")
+    @ValueSource(strings = {"chrome", "firefox"})
+    public void testPhoneNumberAsOnlySpecificSymbols(String browser) {
+        initDriver(browser);
+
         rf.setPhoneNumber("###FFFS!!!!");
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
         Assertions.assertTrue(rp.isElementDisplayedByClass("f-test-resume_card"));
     }
 
-    @Test
-    public void testIncorrectPhoneNumber() {
+    @ParameterizedTest(name = "Browser: {0}")
+    @ValueSource(strings = {"chrome", "firefox"})
+    public void testIncorrectPhoneNumber(String browser) {
+        initDriver(browser);
+
         rf.setPhoneNumber("+70001200691");
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
         Assertions.assertTrue(rp.isMessagePresent(String.valueOf(RegistrationError.INCORRECT_PHONE_NUMBER)));
     }
 
-    @Test
-    public void testDuplicatePhoneNumber() {
+    @ParameterizedTest(name = "Browser: {0}")
+    @ValueSource(strings = {"chrome", "firefox"})
+    public void testDuplicatePhoneNumber(String browser) {
+        initDriver(browser);
+
         rf.setPhoneNumber("+79911200691");
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
-       Assertions.assertTrue(rp.isMessagePresent(String.valueOf(RegistrationError.BUSY_PHONE_NUMBER)));
+        Assertions.assertTrue(rp.isMessagePresent(String.valueOf(RegistrationError.BUSY_PHONE_NUMBER)));
     }
 
-    @Test
-    public void testPostResumeWithoutContacts() {
-        driver.get(MainPage.baseUrl);
+    @ParameterizedTest(name = "Browser: {0}")
+    @ValueSource(strings = {"chrome", "firefox"})
+    public void testPostResumeWithoutContacts(String browser) {
+        initDriver(browser);
+        driver.get(baseUrl);
         mp.postResume();
         rf.setPhoneNumber(null);
         rf.setEmail(null);

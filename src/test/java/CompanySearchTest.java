@@ -17,7 +17,6 @@ public class CompanySearchTest {
     @BeforeAll
     public static void setUpBeforeAll() {
         driver = new FirefoxDriver();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         sp = new SearchPage(driver, baseUrl);
         cp = new CompanyPage(driver, baseUrl);
     }

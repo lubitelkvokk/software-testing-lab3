@@ -24,17 +24,6 @@ public class MainPage {
         wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
     }
 
-    @FindBy(xpath = "//*[contains(@class, 'f-test-input-login')]")
-    private WebElement loginField;
-
-    @FindBy(xpath = "//*[contains(@class, 'f-test-button-Vyjti')]")
-    private WebElement logoutBtn;
-
-    @FindBy(xpath = "//*[contains(@class, 'f-test-input-password')]")
-    private WebElement passwdField;
-
-    @FindBy(xpath = "//*[contains(@class, 'f-test-tooltip-Nastrojki_Vyjti')]")
-    private WebElement avatarBtn;
 
     @FindBy(xpath = "/html/body/div[1]/div/div/div[1]/div[3]/div[1]/div[3]/div/div/div[3]/div/div/div[2]/div[1]/div/div/div[1]/div/div/div[2]/div/span")
     private WebElement nameField;
@@ -50,22 +39,16 @@ public class MainPage {
         wait.until(ExpectedConditions.elementToBeClickable(locator)).click();
     }
     public String getName() {
-        avatarBtn.click();
+        clickAvatar();
         return nameField.getText();
     }
 
-    public boolean isLoggedIn() {
-        return avatarBtn.isDisplayed();
-    }
-
     public void clickAvatar() {
-        wait.until(d -> avatarBtn.isDisplayed());
-        avatarBtn.click();
+        clickButton(By.xpath("//*[contains(@class, 'f-test-tooltip-Nastrojki_Vyjti')]"));
     }
 
     public void clickLogoutBtn() {
-        wait.until(d -> logoutBtn.isDisplayed());
-        logoutBtn.click();
+        clickButton(By.xpath("//*[contains(@class, 'f-test-button-Vyjti')]"));
     }
 
     public void postResume(){

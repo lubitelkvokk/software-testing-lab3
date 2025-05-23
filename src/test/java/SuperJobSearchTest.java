@@ -1,5 +1,6 @@
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -19,10 +20,12 @@ public class SuperJobSearchTest {
     @BeforeAll
     public static void setUpBeforeAll() {
         driver = new FirefoxDriver();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         sp = new SearchPage(driver, baseUrl);
         vp = new VacancyPage(driver, baseUrl);
+    }
 
+    @BeforeEach
+    public void setUp(){
         driver.get(baseUrl);
     }
 

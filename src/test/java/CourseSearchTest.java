@@ -26,7 +26,6 @@ public class CourseSearchTest {
         driver = new FirefoxDriver();
         wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
         coursePage = new CoursePage(driver, baseUrl);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
     }
 
     @BeforeEach

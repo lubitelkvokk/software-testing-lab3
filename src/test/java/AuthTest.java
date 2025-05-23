@@ -22,7 +22,6 @@ public class AuthTest {
     @BeforeAll
     public static void setUpAll() {
         driver = new FirefoxDriver();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         js = (JavascriptExecutor) driver;
         driver.manage().window().maximize();
 
@@ -37,19 +36,12 @@ public class AuthTest {
 
     @BeforeEach
     public void setUp() {
-        driver.manage().deleteAllCookies();
         driver.get(baseUrl);
-        CookiesHelper.loadCookies(driver);
     }
 
     @AfterAll
     public static void tearDownAll() {
         driver.quit();
-//        try {
-//            CookiesHelper.clearCookiesFile();
-//        } catch (FileNotFoundException e) {
-//            throw new RuntimeException("Cookies aren't cleaned");
-//        }
     }
 
 
@@ -72,7 +64,6 @@ public class AuthTest {
     @Test
     @Order(3)
     public void logoutTest() {
-        driver.navigate().refresh();
         mainPage.clickAvatar();
         mainPage.clickLogoutBtn();
         Assertions.assertTrue(loginPage.checkLoginBtn(), "Кнопка входа не отображается после выхода");

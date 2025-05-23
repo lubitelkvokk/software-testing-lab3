@@ -3,6 +3,7 @@ package se.ifmo.pages.registration.company;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import se.ifmo.ConfProperties;
 
 import java.time.Duration;
 
@@ -13,7 +14,7 @@ public class RegisterCompanyPage {
 
     public RegisterCompanyPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
         this.js = (JavascriptExecutor) driver;
     }
 
@@ -26,7 +27,7 @@ public class RegisterCompanyPage {
     }
 
     private void fillField(By locator, String value) {
-        WebElement field = driver.findElement(locator);
+        WebElement field = wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
         field.clear();
         field.sendKeys(value);
     }
@@ -51,9 +52,9 @@ public class RegisterCompanyPage {
     }
 
     public void fillHRDetails(String firstName, String lastName, String position) {
-        driver.findElement(By.name("hr.firstName")).sendKeys(firstName);
-        driver.findElement(By.name("hr.lastName")).sendKeys(lastName);
-        driver.findElement(By.name("hr.position")).sendKeys(position);
+        fillField(By.xpath("//*[contains(@class, 'f-test-input-hr.firstName')]"), firstName);
+        fillField(By.xpath("//*[contains(@class, 'f-test-input-hr.lastName')]"), lastName);
+        fillField(By.xpath("//*[contains(@class, 'f-test-input-hr.position')]"), position);
     }
 
     public void scrollToElement(By locator) {
@@ -77,7 +78,7 @@ public class RegisterCompanyPage {
 
     public boolean isRegistrationSuccessful() {
         try {
-            return driver.findElement(By.xpath("//*[contains(text(), 'Спасибо за регистрацию!')]")).isDisplayed();
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[contains(text(), 'Спасибо за регистрацию!')]"))).isDisplayed();
         } catch (NoSuchElementException e) {
             return false;
         }

@@ -6,6 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import se.ifmo.ConfProperties;
 import se.ifmo.pages.searching.cv.EducationType;
 import se.ifmo.pages.searching.cv.EmploymentType;
 import se.ifmo.pages.searching.cv.SeekerActivity;
@@ -24,7 +25,7 @@ public class CoursePage {
         this.driver = driver;
 
         js = (JavascriptExecutor) driver;
-        wait = new WebDriverWait(driver, Duration.ofSeconds(15));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
     }
 
     private void fillField(By locator, String value) {

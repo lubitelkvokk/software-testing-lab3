@@ -23,7 +23,6 @@ public class JobRespondTest {
     @BeforeAll
     public static void setUpBeforeAll() {
         driver = new FirefoxDriver();
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
         sp = new SearchPage(driver, baseUrl);
         vp = new VacancyPage(driver, baseUrl);
         rp = new RespondPage(driver, baseUrl);
