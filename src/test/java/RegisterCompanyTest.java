@@ -1,26 +1,33 @@
 package se.ifmo.registration;
 
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import se.ifmo.pages.registration.company.CompanyType;
 import se.ifmo.pages.registration.company.ExperienceVar;
 import se.ifmo.pages.registration.company.RegisterCompanyPage;
 import se.ifmo.pages.registration.RegistrationPage;
+import se.ifmo.pages.searching.company.CompanyPage;
+import se.ifmo.util.DriverRealisation;
 
 import java.time.Duration;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class RegisterCompanyTest {
     private static WebDriver driver;
-    private static RegisterCompanyPage registerPage;
+    private RegisterCompanyPage registerPage;
 
 
     @BeforeAll
     public static void setUp() {
         driver = new FirefoxDriver();
         driver.manage().window().maximize();
-        registerPage = new RegisterCompanyPage(driver);
     }
 
     @AfterAll
@@ -28,9 +35,16 @@ public class RegisterCompanyTest {
         driver.quit();
     }
 
+    public void browser_setup(DriverRealisation driverRealisation) {
+        registerPage = new RegisterCompanyPage(driverRealisation);
+    }
+
     @Order(1)
-    @Test
-    public void testRegisterCompany() {
+    @ParameterizedTest(name = "Browser: {0}")
+    @MethodSource("browser")
+    public void testRegisterCompany(DriverRealisation driverRealisation) {
+        browser_setup(driverRealisation);
+
         registerPage.openMainPage();
         registerPage.clickLoginButton();
         String email = RegistrationPage.getRandomEmail();
@@ -49,11 +63,21 @@ public class RegisterCompanyTest {
     }
 
     @Order(2)
-    @Test
-    public void testVacancyCreate() {
+    @ParameterizedTest(name = "Browser: {0}")
+    @MethodSource("browser")
+    public void testVacancyCreate(DriverRealisation driverRealisation) {
+        browser_setup(driverRealisation);
+
         registerPage.goToPersonalAccount();
         registerPage.createVacancy("Developer", ExperienceVar.FROM_1YEAR);
         Assertions.assertTrue(registerPage.isVacancyPublicationSuccessfull());
+    }
+
+    static Stream<Arguments> browser() {
+        return Stream.of(
+                arguments(DriverRealisation.CHROME),
+                arguments(DriverRealisation.FIREFOX)
+        );
     }
 }
 

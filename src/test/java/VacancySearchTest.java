@@ -19,15 +19,6 @@ public class VacancySearchTest {
     private static SearchPage sp;
     private static VacancyPage vp;
 
-    @BeforeAll
-    public static void setUpBeforeAll() {
-        driver = new FirefoxDriver();
-        wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
-        sp = new SearchPage(driver, baseUrl);
-        vp = new VacancyPage(driver, baseUrl);
-
-    }
-
     @BeforeEach
     public void setUp(){
         driver.get(baseUrl);

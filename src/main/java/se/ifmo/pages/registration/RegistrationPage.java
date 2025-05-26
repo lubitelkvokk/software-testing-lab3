@@ -1,9 +1,6 @@
 package se.ifmo.pages.registration;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import se.ifmo.ConfProperties;
@@ -19,10 +16,13 @@ public class RegistrationPage {
 
     private final WebDriver driver;
     private final WebDriverWait wait;
+    private final JavascriptExecutor js;
 
     public RegistrationPage(DriverRealisation driverRealisation) {
         driver = SingletonWebDriver.getDriver(driverRealisation);
         wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
+        js = (JavascriptExecutor) driver;
+
     }
 
     public static String getRandomEmail() {
@@ -34,15 +34,18 @@ public class RegistrationPage {
     }
 
     private void fillBirthDate(String birthDate) {
-        By by = By.xpath("//*[contains(@class, 'f-test-input-birthDate')]");
-        clickButton(by);
-        visibilityOfElementLocated(by).sendKeys(birthDate);
+        By by = By.xpath("//input[contains(@class, 'f-test-input-birthDate')]");
+        fillField(by, birthDate);
     }
 
     private void fillField(By locator, String value) {
         WebElement field = visibilityOfElementLocated(locator);
         field.clear();
         field.sendKeys(value);
+    }
+
+    private void scrollTo(WebElement field){
+        js.executeScript("arguments[0].scrollIntoView(true);", field);
     }
 
     private WebElement visibilityOfElementLocated(By locator) {
@@ -144,7 +147,6 @@ public class RegistrationPage {
 
         for (String skill : rf.getProfessionalSkills()) {
             fillField(By.xpath("//*[contains(@class, 'f-test-input-professionalSkills')]"), skill);
-            clickButton(By.xpath("//*[contains(@class, 'f-test-option-')]"));
         }
         fillField(By.xpath("//*[contains(@class, 'f-test-input-salary')]"), rf.getSalary());
         fillField(By.xpath("//*[contains(@class, 'f-test-input-position')]"), rf.getDesiredPosition());

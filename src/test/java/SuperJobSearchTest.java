@@ -17,12 +17,6 @@ public class SuperJobSearchTest {
     private static SearchPage sp;
     private static VacancyPage vp;
 
-    @BeforeAll
-    public static void setUpBeforeAll() {
-        driver = new FirefoxDriver();
-        sp = new SearchPage(driver, baseUrl);
-        vp = new VacancyPage(driver, baseUrl);
-    }
 
     @BeforeEach
     public void setUp(){

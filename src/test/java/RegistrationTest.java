@@ -1,16 +1,19 @@
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.*;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import se.ifmo.SingletonWebDriver;
 import se.ifmo.pages.MainPage;
 import se.ifmo.pages.registration.RegistrationError;
 import se.ifmo.pages.registration.RegistrationForm;
 import se.ifmo.pages.registration.RegistrationPage;
 import se.ifmo.util.DriverRealisation;
+
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class RegistrationTest {
 
@@ -21,15 +24,9 @@ public class RegistrationTest {
     private MainPage mp;
     public static final String baseUrl = "https://spb.superjob.ru/";
 
-//    @BeforeAll
-//    public static void setUpBeforeAll() {
-//    }
-
-
 
     @BeforeEach
     public void setUp() {
-
         String email = RegistrationPage.getRandomEmail();
         String phone = RegistrationPage.getRandomNumber();
         String[] skills = new String[]{"Git", "Maven"};
@@ -62,22 +59,24 @@ public class RegistrationTest {
     }
 
     @ParameterizedTest(name = "Browser: {0}")
-    @EnumSource(DriverRealisation.class)
+    @MethodSource("browser")
     public void testValidRegistration(DriverRealisation browserDriver) {
         initDriver(browserDriver);
-        rp.getUrl(baseUrl);
 
+        rp.getUrl(baseUrl);
         rf.setPhoneNumber(null);
+        rf.setEmail(RegistrationPage.getRandomEmail());
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
         assert rp.isRegistrationFinished();
     }
 
     @ParameterizedTest(name = "Browser: {0}")
-    @EnumSource(DriverRealisation.class)
+    @MethodSource("browser")
     public void testInvalidPhoneNumber(DriverRealisation driverRealisation) {
         initDriver(driverRealisation);
 
+        rp.getUrl(baseUrl);
         rf.setPhoneNumber("123");
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
@@ -85,12 +84,13 @@ public class RegistrationTest {
     }
 
     @ParameterizedTest(name = "Browser: {0}")
-    @EnumSource(DriverRealisation.class)
+    @MethodSource("browser")
     public void testPhoneNumberIsEmpty(DriverRealisation driverRealisation) {
         initDriver(driverRealisation);
 
         rp.getUrl(baseUrl);
         rf.setPhoneNumber("");
+        rf.setEmail(RegistrationPage.getRandomEmail());
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
         Assertions.assertTrue(rp.isElementDisplayedByClass("f-test-resume_card"));
@@ -98,21 +98,24 @@ public class RegistrationTest {
 
 
     @ParameterizedTest(name = "Browser: {0}")
-    @EnumSource(DriverRealisation.class)
+    @MethodSource("browser")
     public void testPhoneNumberAsOnlySpecificSymbols(DriverRealisation driverRealisation) {
         initDriver(driverRealisation);
 
+        rp.getUrl(baseUrl);
         rf.setPhoneNumber("###FFFS!!!!");
+        rf.setEmail(RegistrationPage.getRandomEmail());
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
         Assertions.assertTrue(rp.isElementDisplayedByClass("f-test-resume_card"));
     }
 
     @ParameterizedTest(name = "Browser: {0}")
-    @EnumSource(DriverRealisation.class)
+    @MethodSource("browser")
     public void testIncorrectPhoneNumber(DriverRealisation driverRealisation) {
         initDriver(driverRealisation);
 
+        rp.getUrl(baseUrl);
         rf.setPhoneNumber("+70001200691");
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
@@ -120,10 +123,11 @@ public class RegistrationTest {
     }
 
     @ParameterizedTest(name = "Browser: {0}")
-    @EnumSource(DriverRealisation.class)
+    @MethodSource("browser")
     public void testDuplicatePhoneNumber(DriverRealisation driverRealisation) {
         initDriver(driverRealisation);
 
+        rp.getUrl(baseUrl);
         rf.setPhoneNumber("+79911200691");
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
@@ -131,7 +135,7 @@ public class RegistrationTest {
     }
 
     @ParameterizedTest(name = "Browser: {0}")
-    @EnumSource(DriverRealisation.class)
+    @MethodSource("browser")
     public void testPostResumeWithoutContacts(DriverRealisation driverRealisation) {
         initDriver(driverRealisation);
         mp.getUrl(baseUrl);
@@ -140,6 +144,13 @@ public class RegistrationTest {
         rf.setEmail(null);
         rp.fillRegistrationForm(rf);
         Assertions.assertTrue(rp.isMessagePresent(String.valueOf(RegistrationError.EMPTY_PHONE_AND_EMAIL)));
+    }
+
+    static Stream<Arguments> browser() {
+        return Stream.of(
+                arguments(DriverRealisation.CHROME),
+                arguments(DriverRealisation.FIREFOX)
+        );
     }
 }
 

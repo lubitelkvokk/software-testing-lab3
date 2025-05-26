@@ -7,6 +7,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import se.ifmo.ConfProperties;
+import se.ifmo.SingletonWebDriver;
+import se.ifmo.util.DriverRealisation;
 
 import java.time.Duration;
 
@@ -16,11 +18,10 @@ public class CompanyPage {
     private WebDriverWait wait;
     private JavascriptExecutor js;
 
-    public CompanyPage(WebDriver driver, String baseUrl) {
-        this.driver = driver;
-
-        js = (JavascriptExecutor) driver;
+    public CompanyPage(DriverRealisation driverRealisation, String baseUrl) {
+        driver = SingletonWebDriver.getDriver(driverRealisation);
         wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
+        js = (JavascriptExecutor) driver;
     }
 
     private void fillField(By locator, String value) {
@@ -54,4 +55,7 @@ public class CompanyPage {
     }
 
 
+    public void get(String baseUrl) {
+        driver.get(baseUrl);
+    }
 }

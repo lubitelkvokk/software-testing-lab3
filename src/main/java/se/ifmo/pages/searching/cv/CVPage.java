@@ -1,14 +1,13 @@
 package se.ifmo.pages.searching.cv;
 
+import org.openqa.selenium.*;
 import se.ifmo.ConfProperties;
+import se.ifmo.SingletonWebDriver;
 import se.ifmo.pages.searching.vacancy.VacancyType;
 import se.ifmo.pages.searching.vacancy.WorkingRate;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import se.ifmo.util.DriverRealisation;
 
 import java.time.Duration;
 
@@ -18,8 +17,8 @@ public class CVPage {
     private WebDriverWait wait;
     private JavascriptExecutor js;
 
-    public CVPage(WebDriver driver, String baseUrl) {
-        this.driver = driver;
+    public CVPage(DriverRealisation driverRealisation, String baseUrl) {
+        driver = SingletonWebDriver.getDriver(driverRealisation);
 
         js = (JavascriptExecutor) driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
@@ -40,7 +39,7 @@ public class CVPage {
     }
 
     public void filterBySalary() {
-        clickButton(By.xpath("//*[contains(@class, 'f-test-link-ot_')]"));
+        clickWithRetry(By.xpath("//*[contains(@class, 'f-test-link-ot_')]"));
     }
 
     public void filterByWorkingRate(WorkingRate workingRate) {
@@ -48,18 +47,30 @@ public class CVPage {
     }
 
     public void filterBySeekerActivity(SeekerActivity seekerActivity) {
-        clickButton(By.xpath("//*[contains(@class, '" + seekerActivity.toString() + "')]"));
+        clickWithRetry(By.xpath("//*[contains(@class, '" + seekerActivity.toString() + "')]"));
     }
 
     public void filterByEmploymentType(EmploymentType employmentType) {
-        clickButton(By.xpath("//*[contains(@class, '" + employmentType.toString() + "')]"));
+        clickWithRetry(By.xpath("//*[contains(@class, '" + employmentType.toString() + "')]"));
     }
+
     public void filterByVacancyType(VacancyType vacancyType) {
         clickButton(By.xpath("//*[contains(@class, '" + vacancyType + "')]"));
     }
 
+    public void clickWithRetry(By locator) {
+        for (int i = 0; i < 10; i++) {
+            try {
+                clickButton(locator);
+                return;
+            } catch (StaleElementReferenceException e) {
+                System.out.println("One more try to click filter");
+            }
+        }
+    }
+
     public void filterByEducationType(EducationType educationType) {
-        clickButton(By.xpath("//*[contains(@class, '" + educationType + "')]"));
+        clickWithRetry(By.xpath("//*[contains(@class, '" + educationType + "')]"));
     }
 
     public WebElement getFirstCV() {

@@ -7,6 +7,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import se.ifmo.ConfProperties;
+import se.ifmo.SingletonWebDriver;
+import se.ifmo.util.DriverRealisation;
 
 import java.time.Duration;
 import java.util.List;
@@ -18,8 +20,8 @@ public class SearchPage {
     private JavascriptExecutor js;
     private final String baseUrl;
 
-    public SearchPage(WebDriver driver, String baseUrl) {
-        this.driver = driver;
+    public SearchPage(DriverRealisation driverRealisation, String baseUrl) {
+        driver = SingletonWebDriver.getDriver(driverRealisation);
         this.baseUrl = baseUrl;
 
         js = (JavascriptExecutor) driver;
@@ -105,5 +107,9 @@ public class SearchPage {
         WebElement applyButton = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//*[contains(@class,'f-test-button-Primenit')]")));
         applyButton.click();
+    }
+
+    public void getUrl(String baseUrl) {
+        driver.get(baseUrl);
     }
 }
