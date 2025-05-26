@@ -7,8 +7,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import se.ifmo.ConfProperties;
+import se.ifmo.SingletonWebDriver;
 import se.ifmo.util.DriverRealisation;
-import se.ifmo.util.GenericDriver;
 
 import java.time.Duration;
 import java.util.List;
@@ -17,14 +17,12 @@ import java.util.Random;
 public class RegistrationPage {
 
 
-    private final GenericDriver driver;
-
-    public RegistrationPage(GenericDriver driver) {
-        this.driver = driver;
-    }
+    private final WebDriver driver;
+    private final WebDriverWait wait;
 
     public RegistrationPage(DriverRealisation driverRealisation) {
-        this.driver = new GenericDriver(driverRealisation);
+        driver = SingletonWebDriver.getDriver(driverRealisation);
+        wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
     }
 
     public static String getRandomEmail() {
@@ -36,21 +34,27 @@ public class RegistrationPage {
     }
 
     private void fillBirthDate(String birthDate) {
-        fillField(By.xpath("//*[contains(@class, 'f-test-input-birthDate')]"), birthDate);
+        By by = By.xpath("//*[contains(@class, 'f-test-input-birthDate')]");
+        clickButton(by);
+        visibilityOfElementLocated(by).sendKeys(birthDate);
     }
 
     private void fillField(By locator, String value) {
-        WebElement field = driver.visibilityOfElementLocated(locator);
+        WebElement field = visibilityOfElementLocated(locator);
         field.clear();
         field.sendKeys(value);
     }
 
+    private WebElement visibilityOfElementLocated(By locator) {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
     private WebElement waitUntilVisibleElement(By locator) {
-        return driver.visibilityOfElementLocated(locator);
+        return visibilityOfElementLocated(locator);
     }
 
     private List<WebElement> waitUntilVisibleElements(By locator) {
-        return driver.visibilityOfAllElementsLocatedBy(locator);
+        return wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(locator));
     }
 
     private void fillPhoneNumber(String phoneNumber) {
@@ -94,7 +98,7 @@ public class RegistrationPage {
     }
 
     private void clickButton(By locator) {
-        driver.click(locator);
+        wait.until(ExpectedConditions.elementToBeClickable(locator)).click();
     }
 
     public boolean isMessagePresent(String message) {
@@ -148,4 +152,7 @@ public class RegistrationPage {
         finishRegistration();
     }
 
+    public void getUrl(String baseUrl) {
+        driver.get(baseUrl);
+    }
 }

@@ -1,34 +1,35 @@
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import se.ifmo.SingletonWebDriver;
 import se.ifmo.pages.MainPage;
 import se.ifmo.pages.registration.RegistrationError;
 import se.ifmo.pages.registration.RegistrationForm;
 import se.ifmo.pages.registration.RegistrationPage;
+import se.ifmo.util.DriverRealisation;
 
 public class RegistrationTest {
 
-    private static WebDriver driver;
+    private static SingletonWebDriver singletonWebDriver;
     private static JavascriptExecutor js;
-    private static RegistrationForm rf;
-    private static RegistrationPage rp;
-    private static MainPage mp;
-    public static String baseUrl = "https://spb.superjob.ru/";
+    private RegistrationForm rf;
+    private RegistrationPage rp;
+    private MainPage mp;
+    public static final String baseUrl = "https://spb.superjob.ru/";
 
-    @BeforeAll
-    public static void setUpBeforeAll() {
-        driver = new ChromeDriver();
-        rp = new RegistrationPage(driver);
-        mp = new MainPage(driver);
-        js = (JavascriptExecutor) driver;
-        driver.manage().window().maximize();
-    }
+//    @BeforeAll
+//    public static void setUpBeforeAll() {
+//    }
+
+
 
     @BeforeEach
     public void setUp() {
+
         String email = RegistrationPage.getRandomEmail();
         String phone = RegistrationPage.getRandomNumber();
         String[] skills = new String[]{"Git", "Maven"};
@@ -47,36 +48,24 @@ public class RegistrationTest {
 
     @AfterEach
     public void tearDown() {
-        driver.manage().deleteAllCookies();
+//        driver.manage().deleteAllCookies();
     }
 
     @AfterAll
     public static void tearDownAfterAll() {
-        driver.quit();
+        SingletonWebDriver.clearDrivers();
     }
 
-    private void initDriver(String browser) {
-        switch (browser.toLowerCase()) {
-            case "chrome":
-
-            case "firefox":
-                driver = new FirefoxDriver();
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported browser: " + browser);
-        }
-        driver.manage().window().maximize();
-        rp = new RegistrationPage();
-        mp = new MainPage(driver);
-        js = (JavascriptExecutor) driver;
-
-        driver.get(baseUrl);
+    private void initDriver(DriverRealisation driverRealisation) {
+        rp = new RegistrationPage(driverRealisation);
+        mp = new MainPage(driverRealisation);
     }
 
     @ParameterizedTest(name = "Browser: {0}")
-    @ValueSource(strings = {"chrome", "firefox"})
-    public void testValidRegistration(String browser) {
-        initDriver(browser);
+    @EnumSource(DriverRealisation.class)
+    public void testValidRegistration(DriverRealisation browserDriver) {
+        initDriver(browserDriver);
+        rp.getUrl(baseUrl);
 
         rf.setPhoneNumber(null);
         rp.createAccount(rf);
@@ -85,9 +74,9 @@ public class RegistrationTest {
     }
 
     @ParameterizedTest(name = "Browser: {0}")
-    @ValueSource(strings = {"chrome", "firefox"})
-    public void testInvalidPhoneNumber(String browser) {
-        initDriver(browser);
+    @EnumSource(DriverRealisation.class)
+    public void testInvalidPhoneNumber(DriverRealisation driverRealisation) {
+        initDriver(driverRealisation);
 
         rf.setPhoneNumber("123");
         rp.createAccount(rf);
@@ -96,10 +85,11 @@ public class RegistrationTest {
     }
 
     @ParameterizedTest(name = "Browser: {0}")
-    @ValueSource(strings = {"chrome", "firefox"})
-    public void testPhoneNumberIsEmpty(String browser) {
-        initDriver(browser);
+    @EnumSource(DriverRealisation.class)
+    public void testPhoneNumberIsEmpty(DriverRealisation driverRealisation) {
+        initDriver(driverRealisation);
 
+        rp.getUrl(baseUrl);
         rf.setPhoneNumber("");
         rp.createAccount(rf);
         rp.fillRegistrationForm(rf);
@@ -108,9 +98,9 @@ public class RegistrationTest {
 
 
     @ParameterizedTest(name = "Browser: {0}")
-    @ValueSource(strings = {"chrome", "firefox"})
-    public void testPhoneNumberAsOnlySpecificSymbols(String browser) {
-        initDriver(browser);
+    @EnumSource(DriverRealisation.class)
+    public void testPhoneNumberAsOnlySpecificSymbols(DriverRealisation driverRealisation) {
+        initDriver(driverRealisation);
 
         rf.setPhoneNumber("###FFFS!!!!");
         rp.createAccount(rf);
@@ -119,9 +109,9 @@ public class RegistrationTest {
     }
 
     @ParameterizedTest(name = "Browser: {0}")
-    @ValueSource(strings = {"chrome", "firefox"})
-    public void testIncorrectPhoneNumber(String browser) {
-        initDriver(browser);
+    @EnumSource(DriverRealisation.class)
+    public void testIncorrectPhoneNumber(DriverRealisation driverRealisation) {
+        initDriver(driverRealisation);
 
         rf.setPhoneNumber("+70001200691");
         rp.createAccount(rf);
@@ -130,9 +120,9 @@ public class RegistrationTest {
     }
 
     @ParameterizedTest(name = "Browser: {0}")
-    @ValueSource(strings = {"chrome", "firefox"})
-    public void testDuplicatePhoneNumber(String browser) {
-        initDriver(browser);
+    @EnumSource(DriverRealisation.class)
+    public void testDuplicatePhoneNumber(DriverRealisation driverRealisation) {
+        initDriver(driverRealisation);
 
         rf.setPhoneNumber("+79911200691");
         rp.createAccount(rf);
@@ -141,10 +131,10 @@ public class RegistrationTest {
     }
 
     @ParameterizedTest(name = "Browser: {0}")
-    @ValueSource(strings = {"chrome", "firefox"})
-    public void testPostResumeWithoutContacts(String browser) {
-        initDriver(browser);
-        driver.get(baseUrl);
+    @EnumSource(DriverRealisation.class)
+    public void testPostResumeWithoutContacts(DriverRealisation driverRealisation) {
+        initDriver(driverRealisation);
+        mp.getUrl(baseUrl);
         mp.postResume();
         rf.setPhoneNumber(null);
         rf.setEmail(null);

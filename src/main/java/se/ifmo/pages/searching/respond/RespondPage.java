@@ -4,8 +4,10 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import se.ifmo.ConfProperties;
+import se.ifmo.SingletonWebDriver;
 import se.ifmo.pages.registration.RegistrationForm;
 import se.ifmo.pages.registration.RegistrationPage;
+import se.ifmo.util.DriverRealisation;
 
 import java.time.Duration;
 import java.util.List;
@@ -18,10 +20,10 @@ public class RespondPage {
     private final String baseUrl;
     private RegistrationPage rp;
 
-    public RespondPage(WebDriver driver, String baseUrl) {
-        this.driver = driver;
+    public RespondPage(DriverRealisation driverRealisation, String baseUrl) {
+        this.driver = SingletonWebDriver.getDriver(driverRealisation);
         this.baseUrl = baseUrl;
-        rp = new RegistrationPage(driver);
+        rp = new RegistrationPage(driverRealisation);
 
         js = (JavascriptExecutor) driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));

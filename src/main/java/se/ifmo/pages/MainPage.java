@@ -8,6 +8,8 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import se.ifmo.ConfProperties;
+import se.ifmo.SingletonWebDriver;
+import se.ifmo.util.DriverRealisation;
 
 import java.time.Duration;
 
@@ -18,15 +20,11 @@ public class MainPage {
     public static String baseUrl = "https://spb.superjob.ru/";
 
 
-    public MainPage(WebDriver driver) {
-        PageFactory.initElements(driver, this);
-        this.driver = driver;
+    public MainPage(DriverRealisation driverRealisation) {
+        this.driver = SingletonWebDriver.getDriver(driverRealisation);
         wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
     }
 
-
-    @FindBy(xpath = "/html/body/div[1]/div/div/div[1]/div[3]/div[1]/div[3]/div/div/div[3]/div/div/div[2]/div[1]/div/div/div[1]/div/div/div[2]/div/span")
-    private WebElement nameField;
 
 
     private void fillField(By locator, String value) {
@@ -40,7 +38,7 @@ public class MainPage {
     }
     public String getName() {
         clickAvatar();
-        return nameField.getText();
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("\"/html/body/div[1]/div/div/div[1]/div[3]/div[1]/div[3]/div/div/div[3]/div/div/div[2]/div[1]/div/div/div[1]/div/div/div[2]/div/span\""))).getText();
     }
 
     public void clickAvatar() {
@@ -55,4 +53,7 @@ public class MainPage {
         clickButton(By.xpath("//*[contains(@class, 'f-test-button-Razmestit_rezyume')]"));
     }
 
+    public void getUrl(String baseUrl) {
+        driver.get(baseUrl);
+    }
 }

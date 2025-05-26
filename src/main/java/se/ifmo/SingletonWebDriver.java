@@ -9,27 +9,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SingletonWebDriver {
-    private static List<WebDriver> drivers = new ArrayList<WebDriver>();
 
-
-    private static boolean driverIsCreated(WebDriver driver) {
-        boolean flag = false;
-        for (WebDriver d : drivers) {
-            if (d instanceof driver.getClass()) {
-                flag = true;
-            }
-        }
-        return flag;
-    }
+    private static ChromeDriver chromeDriver;
+    private static FirefoxDriver firefoxDriver;
 
     public static WebDriver getDriver(DriverRealisation dr) {
         switch (dr) {
             case CHROME:
-                if (drivers.co)
-                    driver = new ChromeDriver();
-                break;
+                if (chromeDriver == null)
+                    chromeDriver = new ChromeDriver();
+                return chromeDriver;
             case FIREFOX:
-                driver = new FirefoxDriver();
+                if (firefoxDriver == null)
+                    firefoxDriver = new FirefoxDriver();
+                return firefoxDriver;
         }
+        throw new RuntimeException("Driver not supported");
+    }
+
+    public static void clearDrivers(){
+        if (chromeDriver != null) chromeDriver.quit();
+        if (firefoxDriver != null) firefoxDriver.quit();
+        chromeDriver = null;
+        firefoxDriver = null;
     }
 }
