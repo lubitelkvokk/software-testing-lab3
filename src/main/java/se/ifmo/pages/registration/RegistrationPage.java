@@ -4,8 +4,6 @@ import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import se.ifmo.ConfProperties;
-import se.ifmo.SingletonWebDriver;
-import se.ifmo.util.DriverRealisation;
 
 import java.time.Duration;
 import java.util.List;
@@ -18,8 +16,8 @@ public class RegistrationPage {
     private final WebDriverWait wait;
     private final JavascriptExecutor js;
 
-    public RegistrationPage(DriverRealisation driverRealisation) {
-        driver = SingletonWebDriver.getDriver(driverRealisation);
+    public RegistrationPage(WebDriver driver) {
+        this.driver = driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
         js = (JavascriptExecutor) driver;
 

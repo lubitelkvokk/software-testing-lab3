@@ -4,7 +4,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import se.ifmo.SingletonWebDriver;
+import se.ifmo.WebDriverBuilder;
 import se.ifmo.pages.searching.SearchPage;
 import se.ifmo.pages.searching.company.CompanyPage;
 import se.ifmo.pages.searching.cv.CVPage;
@@ -24,15 +24,21 @@ public class CVSearchTest {
 
     private SearchPage sp;
     private CVPage cvPage;
+    private WebDriverBuilder genericDriver;
 
-    @AfterAll
-    public static void tearDown() {
-        SingletonWebDriver.clearDrivers();
+    @BeforeEach
+    public void setUp() {
+        genericDriver = new WebDriverBuilder();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        genericDriver.clearDrivers();
     }
 
     public void browser_setup(DriverRealisation driverRealisation) {
-        sp = new SearchPage(driverRealisation, baseUrl);
-        cvPage = new CVPage(driverRealisation, baseUrl);
+        sp = new SearchPage(genericDriver.getDriver(driverRealisation), baseUrl);
+        cvPage = new CVPage(genericDriver.getDriver(driverRealisation), baseUrl);
     }
 
     @ParameterizedTest(name = "Browser: {0}")
@@ -75,7 +81,7 @@ public class CVSearchTest {
     public void testCVWithEducationType(DriverRealisation driverRealisation) {
         browser_setup(driverRealisation);
         sp.getUrl(baseUrl);
-        cvPage.filterByEducationType(EducationType.INCOMPLETE_HIGHER);
+        cvPage.filterByEducationType(EducationType.HIGHER);
         Assertions.assertTrue(cvPage.CVIsDisplayed());
     }
 

@@ -1,72 +1,92 @@
 import org.junit.jupiter.api.*;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import se.ifmo.ConfProperties;
-import se.ifmo.pages.searching.SearchPage;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import se.ifmo.WebDriverBuilder;
 import se.ifmo.pages.searching.course.*;
-import se.ifmo.pages.searching.cv.CVPage;
-import se.ifmo.pages.searching.cv.EducationType;
-import se.ifmo.pages.searching.cv.EmploymentType;
-import se.ifmo.pages.searching.cv.SeekerActivity;
+import se.ifmo.util.DriverRealisation;
 
-import java.time.Duration;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class CourseSearchTest {
 
     private static final String baseUrl = "https://spb.superjob.ru/kursy/";
-    private static WebDriver driver;
-    private static WebDriverWait wait;
+    private  CoursePage coursePage;
 
-    private static CoursePage coursePage;
-
-    @BeforeAll
-    public static void setUpBeforeAll() {
-        driver = new FirefoxDriver();
-        wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
-        coursePage = new CoursePage(driver, baseUrl);
-    }
+    private WebDriverBuilder genericDriver;
 
     @BeforeEach
     public void setUp() {
-        driver.get(baseUrl);
+        genericDriver = new WebDriverBuilder();
     }
 
-    @AfterAll
-    public static void tearDown() {
-        driver.quit();
+    @AfterEach
+    public void tearDown() {
+        genericDriver.clearDrivers();
     }
 
-    @Test
-    public void testCV() {
+    public void browser_setup(DriverRealisation driverRealisation) {
+        coursePage = new CoursePage(genericDriver.getDriver(driverRealisation), baseUrl);
+    }
+
+    @ParameterizedTest(name = "Browser: {0}")
+    @MethodSource("browser")
+    public void testCV(DriverRealisation driverRealisation) {
+        browser_setup(driverRealisation);
+        coursePage.getUrl(baseUrl);
+
         Assertions.assertTrue(coursePage.CourseIsDisplayed());
     }
 
-    @Test
-    public void testCourseWithSpecializationFilter() {
+    @ParameterizedTest(name = "Browser: {0}")
+    @MethodSource("browser")
+    public void testCourseWithSpecializationFilter(DriverRealisation driverRealisation) {
+        browser_setup(driverRealisation);
+        coursePage.getUrl(baseUrl);
+
         coursePage.filterBySpecialization(Specialization.ADMINISTRATIVE_WORK);
-        Assertions.assertTrue(wait.until(ExpectedConditions.urlContains(Specialization.ADMINISTRATIVE_WORK.getUrlName())));
+        Assertions.assertTrue(coursePage.isUrlContainsSpecialization(Specialization.ADMINISTRATIVE_WORK));
     }
 
-    @Test
-    public void testCourseWithEducationFormatFilter() {
+    @ParameterizedTest(name = "Browser: {0}")
+    @MethodSource("browser")
+    public void testCourseWithEducationFormatFilter(DriverRealisation driverRealisation) {
+        browser_setup(driverRealisation);
+        coursePage.getUrl(baseUrl);
+
         coursePage.filterByEducationType(EducationFormat.ONLINE);
-        Assertions.assertTrue(wait.until(ExpectedConditions.urlContains(EducationFormat.ONLINE.getUrlName())));
+        Assertions.assertTrue(coursePage.isUrlContainsEducationFormat(EducationFormat.ONLINE));
         Assertions.assertTrue(coursePage.CourseIsDisplayed());
     }
 
-    @Test
-    public void testCourseWithDifficultyLevelFilter() {
+    @ParameterizedTest(name = "Browser: {0}")
+    @MethodSource("browser")
+    public void testCourseWithDifficultyLevelFilter(DriverRealisation driverRealisation) {
+        browser_setup(driverRealisation);
+        coursePage.getUrl(baseUrl);
+
         coursePage.filterByDifficultyLevel(DifficultyLevel.START);
-        Assertions.assertTrue(wait.until(ExpectedConditions.urlContains(DifficultyLevel.START.getUrlName())));
+        Assertions.assertTrue(coursePage.isUrlContainsDifficultyLevel(DifficultyLevel.START));
         Assertions.assertTrue(coursePage.CourseIsDisplayed());
     }
 
-    @Test
-    public void testCourseWithCostFilter() {
+    @ParameterizedTest(name = "Browser: {0}")
+    @MethodSource("browser")
+    public void testCourseWithCostFilter(DriverRealisation driverRealisation) {
+        browser_setup(driverRealisation);
+        coursePage.getUrl(baseUrl);
+
         coursePage.filterByCost(Cost.LESS_THAN_5000_RUB);
-        Assertions.assertTrue(wait.until(ExpectedConditions.urlContains(Cost.LESS_THAN_5000_RUB.getUrlName())));
+        Assertions.assertTrue(coursePage.isUrlContainsCost(Cost.LESS_THAN_5000_RUB));
         Assertions.assertTrue(coursePage.CourseIsDisplayed());
+    }
+
+    static Stream<Arguments> browser() {
+        return Stream.of(
+                arguments(DriverRealisation.CHROME),
+                arguments(DriverRealisation.FIREFOX)
+        );
     }
 }

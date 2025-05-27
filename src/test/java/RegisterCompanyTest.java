@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.*;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import se.ifmo.WebDriverBuilder;
 import se.ifmo.pages.registration.company.CompanyType;
 import se.ifmo.pages.registration.company.ExperienceVar;
 import se.ifmo.pages.registration.company.RegisterCompanyPage;
@@ -22,21 +23,21 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 public class RegisterCompanyTest {
     private static WebDriver driver;
     private RegisterCompanyPage registerPage;
+    private static WebDriverBuilder driverBuilder;
 
 
     @BeforeAll
     public static void setUp() {
-        driver = new FirefoxDriver();
-        driver.manage().window().maximize();
+        driverBuilder = new WebDriverBuilder();
     }
 
     @AfterAll
     public static void tearDown() {
-        driver.quit();
+        driverBuilder.clearDrivers();
     }
 
     public void browser_setup(DriverRealisation driverRealisation) {
-        registerPage = new RegisterCompanyPage(driverRealisation);
+        registerPage = new RegisterCompanyPage(driverBuilder.getDriver(driverRealisation));
     }
 
     @Order(1)

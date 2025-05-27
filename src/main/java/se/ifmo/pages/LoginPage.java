@@ -18,8 +18,8 @@ public class LoginPage {
 
 
     public LoginPage(WebDriver driver, String baseUrl) {
-        loginFromUrl = baseUrl;
         this.driver = driver;
+        loginFromUrl = baseUrl;
         wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
     }
 

@@ -1,13 +1,9 @@
 package se.ifmo.pages.searching;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import se.ifmo.ConfProperties;
-import se.ifmo.SingletonWebDriver;
 import se.ifmo.util.DriverRealisation;
 
 import java.time.Duration;
@@ -20,12 +16,33 @@ public class SearchPage {
     private JavascriptExecutor js;
     private final String baseUrl;
 
-    public SearchPage(DriverRealisation driverRealisation, String baseUrl) {
-        driver = SingletonWebDriver.getDriver(driverRealisation);
+    public SearchPage(WebDriver driver, String baseUrl) {
+        this.driver = driver;
         this.baseUrl = baseUrl;
 
         js = (JavascriptExecutor) driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));
+    }
+
+    private void sleep(Long time){
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+        }
+    }
+    private void clickButton(By locator) {
+        wait.until(ExpectedConditions.elementToBeClickable(locator)).click();
+    }
+
+    public void clickWithRetry(By locator) {
+        for (int i = 0; i < 10; i++) {
+            try {
+                clickButton(locator);
+                return;
+            } catch (StaleElementReferenceException | ElementClickInterceptedException e) {
+                System.out.println("One more try to click filter");
+            }
+        }
     }
 
     private void scrollToElement(WebElement element) {
@@ -36,12 +53,12 @@ public class SearchPage {
         WebElement dropdown = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//*[contains(@class,'f-test-select-selected')]")));
         dropdown.click();
-        WebElement option = wait.until(ExpectedConditions.visibilityOfElementLocated(
+        WebElement option = wait.until(ExpectedConditions.elementToBeClickable(
                 By.xpath("//div[@id='" + so.toString() + "']/div"))
         );
-
         option.click();
     }
+
 
     public void performSearch(SearchOption so, String keyword, String location) {
         selectSearchType(so);
@@ -54,10 +71,8 @@ public class SearchPage {
         if (location != null && !location.isEmpty()) {
             selectLocation(location);
         }
-
-        WebElement searchButton = wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//*[contains(@class,'f-test-button-Najti')]")));
-        js.executeScript("arguments[0].click();", searchButton);
+        sleep(2000L);
+        clickWithRetry(By.xpath("//*[contains(@class,'f-test-button-Najti')]"));
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(
                 By.xpath("//*[contains(@class,'f-test-vacancy-item')]")));
@@ -65,14 +80,7 @@ public class SearchPage {
 
     private void fillTheCity(String location) {
         driver.findElement(By.xpath("//*[contains(@class, 'f-test-input-geo')]")).sendKeys(location);
-
-//        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(
-//                By.xpath("//*[contains(@class,'f-test-checkable-geo')]"), 0));
-
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-        }
+        sleep(2000L);
 
         List<WebElement>
                 locations = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(

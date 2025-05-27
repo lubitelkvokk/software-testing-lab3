@@ -1,9 +1,6 @@
 package se.ifmo.pages.searching.course;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import se.ifmo.ConfProperties;
@@ -42,6 +39,19 @@ public class CoursePage {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(locator)).isDisplayed();
     }
 
+    private boolean retryLookingNTimes(int n, By locator) {
+        for (int i = 0; i < n; i++) {
+            try {
+                if (isDisplayed(locator)) {
+                    return true;
+                }
+            } catch (StaleElementReferenceException e) {
+                System.out.println("Try looking one more time");
+            }
+        }
+        return false;
+    }
+
     public void filterBySpecialization(Specialization specialization) {
         clickButton(By.xpath("//*[contains(@class, '" + specialization + "')]"));
     }
@@ -59,7 +69,26 @@ public class CoursePage {
     }
 
     public boolean CourseIsDisplayed() {
-        return isDisplayed(By.xpath("//*[contains(@class, 'f-test-badge')]"));
+        return retryLookingNTimes(10, By.xpath("//*[contains(@class, 'f-test-badge')]"));
     }
 
+    public void getUrl(String baseUrl) {
+        driver.get(baseUrl);
+    }
+
+    public boolean isUrlContainsEducationFormat(EducationFormat educationFormat) {
+        return wait.until(ExpectedConditions.urlContains(educationFormat.getUrlName()));
+    }
+
+    public boolean isUrlContainsDifficultyLevel(DifficultyLevel difficultyLevel) {
+        return wait.until(ExpectedConditions.urlContains(difficultyLevel.getUrlName()));
+    }
+
+    public boolean isUrlContainsCost(Cost cost) {
+        return wait.until(ExpectedConditions.urlContains(cost.getUrlName()));
+    }
+
+    public boolean isUrlContainsSpecialization(Specialization specialization) {
+        return wait.until(ExpectedConditions.urlContains(specialization.getUrlName()));
+    }
 }

@@ -1,10 +1,9 @@
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.openqa.selenium.*;
-import se.ifmo.SingletonWebDriver;
+import se.ifmo.WebDriverBuilder;
 import se.ifmo.pages.MainPage;
 import se.ifmo.pages.registration.RegistrationError;
 import se.ifmo.pages.registration.RegistrationForm;
@@ -17,11 +16,10 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class RegistrationTest {
 
-    private static SingletonWebDriver singletonWebDriver;
-    private static JavascriptExecutor js;
     private RegistrationForm rf;
     private RegistrationPage rp;
     private MainPage mp;
+    private WebDriverBuilder genericDriver;
     public static final String baseUrl = "https://spb.superjob.ru/";
 
 
@@ -41,21 +39,19 @@ public class RegistrationTest {
                         .currentlyWork(true).haveExpirience(true).companyDescription("NICHEGO NE DELALI")
                         .build()
         );
+
+        genericDriver = new WebDriverBuilder();
     }
+
 
     @AfterEach
     public void tearDown() {
-//        driver.manage().deleteAllCookies();
-    }
-
-    @AfterAll
-    public static void tearDownAfterAll() {
-        SingletonWebDriver.clearDrivers();
+        genericDriver.clearDrivers();
     }
 
     private void initDriver(DriverRealisation driverRealisation) {
-        rp = new RegistrationPage(driverRealisation);
-        mp = new MainPage(driverRealisation);
+        rp = new RegistrationPage(genericDriver.getDriver(driverRealisation));
+        mp = new MainPage(genericDriver.getDriver(driverRealisation));
     }
 
     @ParameterizedTest(name = "Browser: {0}")

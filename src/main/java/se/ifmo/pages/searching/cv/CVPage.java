@@ -2,12 +2,10 @@ package se.ifmo.pages.searching.cv;
 
 import org.openqa.selenium.*;
 import se.ifmo.ConfProperties;
-import se.ifmo.SingletonWebDriver;
 import se.ifmo.pages.searching.vacancy.VacancyType;
 import se.ifmo.pages.searching.vacancy.WorkingRate;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import se.ifmo.util.DriverRealisation;
 
 import java.time.Duration;
 
@@ -17,8 +15,8 @@ public class CVPage {
     private WebDriverWait wait;
     private JavascriptExecutor js;
 
-    public CVPage(DriverRealisation driverRealisation, String baseUrl) {
-        driver = SingletonWebDriver.getDriver(driverRealisation);
+    public CVPage(WebDriver driver, String baseUrl) {
+        this.driver = driver;
 
         js = (JavascriptExecutor) driver;
         wait = new WebDriverWait(driver, Duration.ofSeconds(Long.parseLong(ConfProperties.getProperty("duration"))));

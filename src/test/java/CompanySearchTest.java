@@ -2,14 +2,10 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import se.ifmo.SingletonWebDriver;
-import se.ifmo.pages.searching.SearchPage;
+import se.ifmo.WebDriverBuilder;
 import se.ifmo.pages.searching.company.CompanyPage;
 import se.ifmo.util.DriverRealisation;
 
-import java.time.Duration;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.params.provider.Arguments.arguments;
@@ -20,13 +16,20 @@ public class CompanySearchTest {
 
     private CompanyPage cp;
 
-    @AfterAll
-    public static void tearDown() {
-        SingletonWebDriver.clearDrivers();
+    private WebDriverBuilder genericDriver;
+
+    @BeforeEach
+    public void setUp() {
+        genericDriver = new WebDriverBuilder();
+    }
+
+    @AfterEach
+    public void tearDown() {
+        genericDriver.clearDrivers();
     }
 
     public void browser_setup(DriverRealisation driverRealisation) {
-        cp = new CompanyPage(driverRealisation, baseUrl);
+        cp = new CompanyPage(genericDriver.getDriver(driverRealisation), baseUrl);
     }
 
     @ParameterizedTest(name = "Browser: {0}")
